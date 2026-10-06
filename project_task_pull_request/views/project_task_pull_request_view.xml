@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!-- Copyright 2017 Specialty Medical Drugstore
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -21,8 +21,10 @@
         <field name="model">project.project</field>
         <field name="inherit_id" ref="project.edit_project" />
         <field name="arch" type="xml">
-            <xpath expr="//group[@name='extra_settings']" position="before">
-                <group string="Pull Request URIs">
+            <!-- Odoo 20 dropped the extra_settings group: next to the
+                 task management settings of the Settings tab. -->
+            <xpath expr="//group[@name='group_tasks_managment']" position="after">
+                <group string="Pull Request URIs" name="pull_request_uris">
                     <field name="pr_required_states" widget="many2many_checkboxes" />
                 </group>
             </xpath>

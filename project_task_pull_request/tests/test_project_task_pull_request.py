@@ -2,13 +2,13 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo.exceptions import ValidationError
-from odoo.tests import tagged
-
-from odoo.addons.base.tests.common import BaseCommon
+from odoo.tests import TransactionCase, tagged
 
 
+# Odoo 20 runs BaseCommon tests as a plain internal user, without the rights
+# to create projects: run as superuser, like the tests of the project module.
 @tagged("post_install", "-at_install")
-class TestProjectTaskPullRequest(BaseCommon):
+class TestProjectTaskPullRequest(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -73,3 +73,14 @@ class TestProjectTaskPullRequest(BaseCommon):
         self.task_3.write({"stage_id": self.done_stage.id})
         self.task_3.invalidate_recordset()
         self.assertEqual(self.done_stage, self.task_3.stage_id)
+
+    def test_views_show_the_pr_fields(self):
+        # Odoo 20 dropped the extra_settings group of the project form.
+        project_form = self.env["project.project"].get_view(
+            self.env.ref("project.edit_project").id
+        )
+        self.assertIn('name="pr_required_states"', project_form["arch"])
+        task_form = self.env["project.task"].get_view(
+            self.env.ref("project.view_task_form2").id
+        )
+        self.assertIn('name="pr_uri"', task_form["arch"])
