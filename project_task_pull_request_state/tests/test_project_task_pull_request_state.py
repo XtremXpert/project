@@ -169,9 +169,16 @@ class TestPullRequestState(TransactionCase):
         ).execute()
 
         # Verify that the parameter has been set to the desired value
-        pr_state_default_param = self.env["ir.config_parameter"].get_param(
+        pr_state_default_param = self.env["ir.config_parameter"].get_str(
             "project_task_pull_request_state.pr_state_default"
         )
         self.assertEqual(
             pr_state_default_param, "open", "PR state default parameter must be 'open'"
         )
+
+    def test_settings_view_shows_the_default_state(self):
+        # Odoo 20 settings use <setting> elements inside the project block.
+        view = self.env["res.config.settings"].get_view(
+            self.env.ref("project.res_config_settings_view_form").id
+        )
+        self.assertIn('name="pr_state_default"', view["arch"])
