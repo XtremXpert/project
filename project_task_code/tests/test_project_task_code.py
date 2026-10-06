@@ -1,13 +1,19 @@
 # Copyright 2016 Tecnativa <vicent.cubells@tecnativa.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo.addons.base.tests.common import BaseCommon
+from odoo.tests import TransactionCase
+
+from odoo.addons.base.tests.common import DISABLED_MAIL_CREATE_CONTEXT
 
 
-class TestProjectTaskCode(BaseCommon):
+# Odoo 20 runs BaseCommon tests as a plain internal user, without the rights
+# to create projects or duplicate tasks: run as superuser, like the tests of
+# the project module itself.
+class TestProjectTaskCode(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.env = cls.env(context=dict(cls.env.context, **DISABLED_MAIL_CREATE_CONTEXT))
         cls.project_task_model = cls.env["project.task"]
         cls.ir_sequence_model = cls.env["ir.sequence"]
         cls.task_sequence = cls.env.ref("project_task_code.sequence_task")
@@ -40,28 +46,28 @@ class TestProjectTaskCode(BaseCommon):
         result = project_task.name_search("TEST-123")
         self.assertIn(
             project_task.id,
-            map(lambda x: x[0], result),
+            [record_id for record_id, _name in result],
             f"Task with code {project_task.code} should be in the results",
         )
 
         result = project_task.name_search("TEST")
         self.assertIn(
             project_task.id,
-            map(lambda x: x[0], result),
+            [record_id for record_id, _name in result],
             f"Task with code {project_task.code} should be in the results",
         )
 
         result = project_task.name_search("much")
         self.assertIn(
             project_task.id,
-            map(lambda x: x[0], result),
+            [record_id for record_id, _name in result],
             f"Task with code {project_task.code} should be in the results",
         )
 
         result = project_task.name_search("20232")
         self.assertNotIn(
             project_task.id,
-            map(lambda x: x[0], result),
+            [record_id for record_id, _name in result],
             f"Task with code {project_task.code} should not be in the results",
         )
 
@@ -117,3 +123,15 @@ class TestProjectTaskCode(BaseCommon):
         self.assertEqual(project_task.code, "/")
         self.assertNotEqual(project_task.code, code)
         self.assertEqual(project_task.display_name, "Test on create task")
+
+    def test_views_show_the_code(self):
+        # Odoo 20 moved the task kanban card to project.view_task_card and
+        # dropped the extra_settings group of the project form.
+        task_model = self.env["project.task"]
+        card = task_model.get_view(self.env.ref("project.view_task_card").id)
+        self.assertIn('name="code"', card["arch"])
+        self.assertIn('name="task_name_display"', card["arch"])
+        form = self.env["project.project"].get_view(
+            self.env.ref("project.edit_project").id
+        )
+        self.assertIn('name="task_name_display"', form["arch"])
