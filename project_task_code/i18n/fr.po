@@ -45,6 +45,10 @@ msgid ""
 "- Number only: the task number alone; titles are kept but not displayed, and "
 "are not required."
 msgstr ""
+"Façon d'identifier les tâches de ce projet :\n"
+"- Numéro et titre : le numéro de la tâche suivi de son titre.\n"
+"- Numéro seul : le numéro de la tâche uniquement ; les titres sont conservés "
+"mais pas affichés, et ne sont pas obligatoires."
 
 #. module: project_task_code
 #: model:ir.model.fields,field_description:project_task_code.field_project_project__id
@@ -55,12 +59,12 @@ msgstr ""
 #. module: project_task_code
 #: model:ir.model.fields.selection,name:project_task_code.selection__project_project__task_name_display__code_name
 msgid "Number and Title"
-msgstr ""
+msgstr "Numéro et titre"
 
 #. module: project_task_code
 #: model:ir.model.fields.selection,name:project_task_code.selection__project_project__task_name_display__code
 msgid "Number only"
-msgstr ""
+msgstr "Numéro seul"
 
 #. module: project_task_code
 #: model:ir.model,name:project_task_code.model_project_project
@@ -76,7 +80,7 @@ msgstr "Tâche"
 #: model:ir.model.fields,field_description:project_task_code.field_project_project__task_name_display
 #: model:ir.model.fields,field_description:project_task_code.field_project_task__task_name_display
 msgid "Task Name Display"
-msgstr ""
+msgstr "Affichage des tâches"
 
 #. module: project_task_code
 #: model:ir.model.fields,field_description:project_task_code.field_project_task__code
