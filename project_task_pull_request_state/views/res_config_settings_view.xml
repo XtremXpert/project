@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pr.state</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="project.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//app[@name='project']/block[@id='tasks_management']"
+                position="inside"
+            >
+                <!-- Odoo 20 settings: a <setting> element, like the project module. -->
+                <setting
+                    id="project_task_pull_request_state_settings"
+                    help="Default PR state. Used in case default PR state is not defined in project"
+                >
+                    <field name="pr_state_default" />
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>
