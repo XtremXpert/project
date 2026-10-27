@@ -60,7 +60,7 @@
     <record id="view_task_list2_extend_with_key" model="ir.ui.view">
         <field name="name">project.task.list</field>
         <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.project_task_view_list_main_base" />
+        <field name="inherit_id" ref="project.project_task_view_tree_main_base" />
         <field eval="2" name="priority" />
         <field name="arch" type="xml">
             <field name="name" position="before">
@@ -83,9 +83,9 @@
     <record id="view_task_kanban_key" model="ir.ui.view">
         <field name="name">project.task.kanban.key</field>
         <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_kanban" />
+        <field name="inherit_id" ref="project.view_task_card" />
         <field name="arch" type="xml">
-            <xpath expr="//kanban/field[@name='stage_id']" position="after">
+            <xpath expr="//card/field[@name='stage_id']" position="after">
                 <field name="key" />
             </xpath>
             <xpath expr="//t[@t-name='card']//field[@name='name']" position="before">
@@ -110,11 +110,11 @@
         <field name="model">project.task</field>
         <field
             name="inherit_id"
-            ref="project.project_sharing_project_task_view_kanban"
+            ref="project.project_sharing_project_task_view_card"
         />
         <field name="active" eval="True" />
         <field name="arch" type="xml">
-            <xpath expr="//kanban/field[@name='state']" position="after">
+            <xpath expr="//card/field[@name='allow_milestones']" position="after">
                 <field name="key" />
             </xpath>
             <xpath expr="//t[@t-name='card']//field[@name='name']" position="before">
@@ -140,13 +140,12 @@
         name="Project Key: portal tasks list"
         inherit_id="project.portal_tasks_list"
     >
-        <xpath expr="//tr/td[span[@t-out='task.id']]" position="attributes">
-            <attribute name="t-if">not task.key</attribute>
-        </xpath>
-        <xpath expr="//tr/td[span[@t-out='task.id']]" position="after">
-            <td t-if="task.key" class="text-start">
-                <span t-out="task.key" />
-            </td>
+        <xpath expr="//tr/td/a[@t-att-title='task.name']" position="after">
+            <span
+                t-if="task.key"
+                class="badge text-bg-light ms-1"
+                t-out="task.key"
+            />
         </xpath>
     </template>
     <template
