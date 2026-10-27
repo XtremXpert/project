@@ -11,7 +11,7 @@
     "installable": True,
     "depends": ["project"],
     "data": [
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
         "security/ir_rule_data.xml",
         "views/project_task_view.xml",
         "views/project_task_description_template_view.xml",
