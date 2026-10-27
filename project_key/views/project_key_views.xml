@@ -140,7 +140,7 @@
         name="Project Key: portal tasks list"
         inherit_id="project.portal_tasks_list"
     >
-        <xpath expr="//tr/td/a[@t-att-title='task.name']" position="after">
+        <xpath expr="//tr/td/a[span[@t-field='task.name']]" position="after">
             <span
                 t-if="task.key"
                 class="badge text-bg-light ms-1"
