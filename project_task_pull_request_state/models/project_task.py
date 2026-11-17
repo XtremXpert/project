@@ -29,9 +29,8 @@ class ProjectTask(models.Model):
     @api.depends("pr_uri")
     def _compute_pr_state(self):
         ICPSudo = self.env["ir.config_parameter"].sudo()
-        # Odoo 20 replaced get_param() by typed getters.
         pr_state_default = ICPSudo.get_str(
-            "project_task_pull_request_state.pr_state_default"
+            "project_task_pull_request_state.pr_state_default", False
         )
         for task in self:
             if not task.pr_uri:

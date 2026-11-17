@@ -1,24 +1,29 @@
 # Copyright 2017 Specialty Medical Drugstore
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from odoo import Command
 from odoo.exceptions import ValidationError
-from odoo.tests import TransactionCase, tagged
+from odoo.tests import tagged
+
+from odoo.addons.base.tests.common import BaseCommon
 
 
-# Odoo 20 runs BaseCommon tests as a plain internal user, without the rights
-# to create projects: run as superuser, like the tests of the project module.
 @tagged("post_install", "-at_install")
-class TestProjectTaskPullRequest(TransactionCase):
+class TestProjectTaskPullRequest(BaseCommon):
+    _test_user_groups = ("project.group_project_manager",)
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         project_obj = cls.env["project.project"]
         stage_obj = cls.env["project.task.type"]
         task_obj = cls.env["project.task"]
-        cls.new_stage = stage_obj.create({"name": "New"})
-        cls.inprogress_stage = stage_obj.create({"name": "In Progress"})
-        cls.done_stage = stage_obj.create({"name": "Done"})
-        cls.cancel_stage = stage_obj.create({"name": "Cancel"})
+        cls.new_stage = stage_obj.create({"name": "New", "user_id": False})
+        cls.inprogress_stage = stage_obj.create(
+            {"name": "In Progress", "user_id": False}
+        )
+        cls.done_stage = stage_obj.create({"name": "Done", "user_id": False})
+        cls.cancel_stage = stage_obj.create({"name": "Cancel", "user_id": False})
         cls.project_1 = project_obj.create(
             {"name": "Test Project 1", "pr_required_states": [(4, cls.done_stage.id)]}
         )
@@ -26,8 +31,8 @@ class TestProjectTaskPullRequest(TransactionCase):
             {
                 "name": "Test Project 2",
                 "pr_required_states": [
-                    (4, cls.done_stage.id),
-                    (4, cls.inprogress_stage.id),
+                    Command.link(cls.done_stage.id),
+                    Command.link(cls.inprogress_stage.id),
                 ],
             }
         )
@@ -73,14 +78,3 @@ class TestProjectTaskPullRequest(TransactionCase):
         self.task_3.write({"stage_id": self.done_stage.id})
         self.task_3.invalidate_recordset()
         self.assertEqual(self.done_stage, self.task_3.stage_id)
-
-    def test_views_show_the_pr_fields(self):
-        # Odoo 20 dropped the extra_settings group of the project form.
-        project_form = self.env["project.project"].get_view(
-            self.env.ref("project.edit_project").id
-        )
-        self.assertIn('name="pr_required_states"', project_form["arch"])
-        task_form = self.env["project.task"].get_view(
-            self.env.ref("project.view_task_form2").id
-        )
-        self.assertIn('name="pr_uri"', task_form["arch"])

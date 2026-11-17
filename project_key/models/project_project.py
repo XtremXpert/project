@@ -7,7 +7,7 @@ from odoo.tools import config
 
 class Project(models.Model):
     _inherit = "project.project"
-    _rec_names_search = ["key", "name", "id"]
+    _rec_names_search = ("key", "name", "id")
 
     task_key_sequence_id = fields.Many2one(
         comodel_name="ir.sequence", string="Key Sequence", ondelete="restrict"
@@ -35,11 +35,11 @@ class Project(models.Model):
 
     @api.depends("key", "name")
     def _compute_display_name(self):
-        super()._compute_display_name()
+        res = super()._compute_display_name()
         for project in self:
             if project.key:
                 project.display_name = f"[{project.key}] {project.display_name}"
-        return
+        return res
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -47,12 +47,12 @@ class Project(models.Model):
         for vals in vals_list:
             key = vals.get("key", False)
             if not key:
-                vals["key"] = self.generate_project_key(vals["name"])
+                vals["key"] = self.generate_project_key(vals.get("name", ""))
 
             # Tasks must be created after the project.
             task_vals = vals.pop("task_ids", [])
 
-            new_project = super().create(vals)
+            new_project = super().create([vals])
             new_projects |= new_project
 
             # The key sequences to create stories and tasks with keys, created with
@@ -141,7 +141,7 @@ class Project(models.Model):
             values["company_id"] = company_id
 
         if init:
-            values.update(dict(number_increment=1, number_next_actual=1))
+            values.update({"number_increment": 1, "number_next_actual": 1})
 
         return values
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
 # Copyright 2017 - 2018 Modoolar <info@modoolar.com>
 # License LGPLv3.0 or later (https://www.gnu.org/licenses/lgpl-3.0.en.html).
@@ -18,10 +18,10 @@
                     Using '-' in project keys is not recommended.
                 </div>
             </field>
-            <field name="partner_id" position="before">
+            <xpath expr="//group/group[1]" position="inside">
                 <field name="key" required="1" />
                 <field name="show_key_warning" invisible="1" />
-            </field>
+            </xpath>
         </field>
     </record>
     <record id="view_project_extend_with_key" model="ir.ui.view">
@@ -57,10 +57,10 @@
             </field>
         </field>
     </record>
-    <record id="view_task_list2_extend_with_key" model="ir.ui.view">
+    <record id="view_task_tree2_extend_with_key" model="ir.ui.view">
         <field name="name">project.task.list</field>
         <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.project_task_view_tree_main_base" />
+        <field name="inherit_id" ref="project.view_task_tree2" />
         <field eval="2" name="priority" />
         <field name="arch" type="xml">
             <field name="name" position="before">
@@ -71,7 +71,7 @@
     <record id="view_task_search_key" model="ir.ui.view">
         <field name="name">project.task.search.key</field>
         <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_search_form_base" />
+        <field name="inherit_id" ref="project.view_task_search_form" />
         <field name="arch" type="xml">
             <field name="name" position="attributes">
                 <attribute
@@ -85,13 +85,14 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_card" />
         <field name="arch" type="xml">
-            <xpath expr="//card/field[@name='stage_id']" position="after">
+            <templates position="before">
+                <field name="url" />
                 <field name="key" />
-            </xpath>
+            </templates>
             <xpath expr="//t[@t-name='card']//field[@name='name']" position="before">
-                <div t-if="record.key" class="mb-1">
-                    <span class="badge text-bg-light" t-out="record.key.raw_value" />
-                </div>
+                <a t-att-href="record.url.raw_value" class="me-1">
+                    <field name="key" />
+                </a>
             </xpath>
         </field>
     </record>
@@ -105,60 +106,4 @@
             </div>
         </field>
     </record>
-    <record id="view_task_kanban_key_project_sharing" model="ir.ui.view">
-        <field name="name">project.sharing.project.task.kanban.key</field>
-        <field name="model">project.task</field>
-        <field
-            name="inherit_id"
-            ref="project.project_sharing_project_task_view_card"
-        />
-        <field name="active" eval="True" />
-        <field name="arch" type="xml">
-            <xpath expr="//card/field[@name='allow_milestones']" position="after">
-                <field name="key" />
-            </xpath>
-            <xpath expr="//t[@t-name='card']//field[@name='name']" position="before">
-                <div t-if="record.key" class="mb-1">
-                    <span class="badge text-bg-light" t-out="record.key.raw_value" />
-                </div>
-            </xpath>
-        </field>
-    </record>
-    <record id="view_task_form_key_project_sharing" model="ir.ui.view">
-        <field name="name">project.sharing.project.task.form.key</field>
-        <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.project_sharing_project_task_view_form" />
-        <field name="arch" type="xml">
-            <xpath expr="//h1//field[@name='name']" position="before">
-                <field name="key" readonly="1" nolabel="1" class="oe_inline" />
-                <span class="oe_inline"> : </span>
-            </xpath>
-        </field>
-    </record>
-    <template
-        id="portal_tasks_list_key"
-        name="Project Key: portal tasks list"
-        inherit_id="project.portal_tasks_list"
-    >
-        <xpath expr="//tr/td/a[span[@t-field='task.name']]" position="after">
-            <span
-                t-if="task.key"
-                class="badge text-bg-light ms-1"
-                t-out="task.key"
-            />
-        </xpath>
-    </template>
-    <template
-        id="portal_my_task_key"
-        name="Project Key: portal task page"
-        inherit_id="project.portal_my_task"
-    >
-        <xpath expr="//h3/span[@t-field='task.name']" position="before">
-            <span
-                t-if="task.key"
-                class="badge text-bg-secondary me-2"
-                t-out="task.key"
-            />
-        </xpath>
-    </template>
 </odoo>
